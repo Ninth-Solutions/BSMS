@@ -3,39 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broadcast Message Sender</title>
+    <title>SMS Broadcast</title>
 </head>
 <body>
-    <h1>Send Broadcast Message</h1>
-    <form id="broadcastForm">
-        <label for="message">Message:</label>
-        <textarea id="message" rows="4" cols="50" required></textarea><br>
-        <button type="submit">Send Message</button>
+    <h1>Send SMS Broadcast</h1>
+    <form id="smsForm">
+        <input type="text" id="messageInput" placeholder="Enter your message" required>
+        <button type="submit">Send</button>
     </form>
-    <div id="response"></div>
 
     <script>
-        document.getElementById('broadcastForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting traditionally
-            
-            const message = document.getElementById('message').value;
+        document.getElementById('smsForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from submitting normally
 
-            fetch('https://glaucous-pointer-4022.twil.io/ttk_broadcast', {
+            const message = document.getElementById('messageInput').value;
+
+            fetch('https://glaucous-pointer-4022.twil.io/ttk_broadcast', {  // Replace with your Twilio function URL
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: new URLSearchParams({
-                    'Body': message
-                }),
+                body: JSON.stringify({ message }) // Sending the message in the request body
             })
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
-                document.getElementById('response').innerText = data; // Display response
-                document.getElementById('broadcastForm').reset(); // Reset the form
+                console.log('Success:', data);
+                alert('Message sent successfully!');
             })
-            .catch(error => {
-                document.getElementById('response').innerText = "Error sending message: " + error;
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to send message.');
             });
         });
     </script>
