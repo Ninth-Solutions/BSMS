@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Message Sender</title>
+</head>
+<body>
+    <h1>Send Broadcast Message</h1>
+    <form id="broadcastForm">
+        <label for="message">Message:</label>
+        <textarea id="message" rows="4" cols="50" required></textarea><br>
+        <button type="submit">Send Message</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('broadcastForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting traditionally
+            
+            const message = document.getElementById('message').value;
+
+            fetch('https://glaucous-pointer-4022.twil.io/ttk_broadcast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'Body': message
+                }),
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('response').innerText = data; // Display response
+                document.getElementById('broadcastForm').reset(); // Reset the form
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = "Error sending message: " + error;
+            });
+        });
+    </script>
+</body>
+</html>
